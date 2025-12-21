@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>MIMO Companion</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --mimo-primary: #000000;
+            --mimo-secondary: #ffffff;
+            --mimo-accent: #3b82f6;
+        }
+
+        body {
+            background-color: var(--mimo-primary);
+            color: var(--mimo-secondary);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            touch-action: manipulation;
+        }
+
+        @media (orientation: landscape) {
+            .ui-panel {
+                max-height: 90vh;
+                overflow-y: auto;
+                padding: 1.5rem;
+            }
+        }
+
+        .button-active:active {
+            transform: scale(0.95);
+            opacity: 0.8;
+        }
+
+        #skip-button {
+            position: fixed;
+            top: 1.5rem;
+            right: 1.5rem;
+            z-index: 9999;
+            pointer-events: auto !important;
+            cursor: pointer;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 0.6rem 1.4rem;
+            border-radius: 9999px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .ui-panel {
+            background: #111;
+            border-radius: 1.5rem;
+            border: 1px solid #333;
+            width: 90%;
+            max-width: 400px;
+            padding: 2.5rem;
+            text-align: center;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        .notification-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #1a1a1a;
+            padding: 1.25rem;
+            border-radius: 1rem;
+            margin-top: 1.5rem;
+            border: 1px solid #222;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 28px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #333;
+            transition: .3s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .3s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: var(--mimo-accent);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(22px);
+        }
+
+        #message-box {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: white;
+            color: black;
+            padding: 0.75rem 1.5rem;
+            border-radius: 9999px;
+            font-weight: 700;
+            z-index: 10000;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            pointer-events: none;
+            white-space: nowrap;
+        }
+
+        #message-box.visible {
+            transform: translateX(-50%) translateY(0);
+        }
+    </style>
+</head>
+<body>
+
+    <button id="skip-button" class="button-active" onclick="handleSkip()">
+        Skip
+    </button>
+
+    <div id="setup-screen" class="ui-panel">
+        <h1 class="text-3xl font-bold mb-2">MIMO</h1>
+        <p class="text-gray-400 mb-8 text-sm">System initialization required.</p>
+        
+        <div class="notification-toggle">
+            <span class="font-semibold text-gray-200">Enable Notifications</span>
+            <label class="switch">
+                <input type="checkbox" id="notification-sync">
+                <span class="slider"></span>
+            </label>
+        </div>
+
+        <button id="sync-btn" onclick="startSync()" class="w-full mt-10 bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-2xl transition duration-200 button-active">
+            Start Sync
+        </button>
+    </div>
+
+    <div id="mimo-interface" class="hidden flex flex-col items-center">
+        <div class="text-8xl mb-6 animate-pulse">🤖</div>
+        <h2 class="text-2xl font-mono tracking-widest text-blue-400">ONLINE</h2>
+        <button onclick="resetSetup()" class="mt-12 text-xs text-gray-500 uppercase tracking-widest border-b border-gray-800 pb-1">Reset System</button>
+    </div>
+
+    <div id="message-box">
+        <span id="message-text"></span>
+    </div>
+
+    <script>
+        const setupScreen = document.getElementById('setup-screen');
+        const mimoInterface = document.getElementById('mimo-interface');
+        const skipButton = document.getElementById('skip-button');
+        const messageBox = document.getElementById('message-box');
+        const messageText = document.getElementById('message-text');
+        const notifyToggle = document.getElementById('notification-sync');
+
+        function showMessage(text) {
+            messageText.innerText = text;
+            messageBox.classList.add('visible');
+            setTimeout(() => {
+                messageBox.classList.remove('visible');
+            }, 2500);
+        }
+
+        // Notification Prompt Logic
+        notifyToggle.addEventListener('change', async () => {
+            if (notifyToggle.checked) {
+                if (!("Notification" in window)) {
+                    showMessage("NOTIFICATIONS NOT SUPPORTED");
+                    notifyToggle.checked = false;
+                    return;
+                }
+
+                if (Notification.permission === "granted") {
+                    showMessage("NOTIFICATIONS ACTIVE");
+                } else if (Notification.permission !== "denied") {
+                    const permission = await Notification.requestPermission();
+                    if (permission === "granted") {
+                        showMessage("NOTIFICATIONS ENABLED");
+                    } else {
+                        showMessage("PERMISSION DENIED");
+                        notifyToggle.checked = false;
+                    }
+                } else {
+                    showMessage("BLOCKED BY SYSTEM SETTINGS");
+                    notifyToggle.checked = false;
+                }
+            } else {
+                showMessage("NOTIFICATIONS MUTED");
+            }
+        });
+
+        function handleSkip() {
+            setupScreen.classList.add('hidden');
+            mimoInterface.classList.remove('hidden');
+            skipButton.classList.add('hidden');
+            showMessage("INITIALIZATION BYPASSED");
+        }
+
+        function startSync() {
+            const btn = document.getElementById('sync-btn');
+            btn.innerText = "SYNCHRONIZING...";
+            btn.disabled = true;
+            btn.style.opacity = "0.5";
+            
+            setTimeout(() => {
+                setupScreen.classList.add('hidden');
+                mimoInterface.classList.remove('hidden');
+                skipButton.classList.add('hidden');
+                showMessage("SYSTEM STABILIZED");
+            }, 1200);
+        }
+
+        function resetSetup() {
+            setupScreen.classList.remove('hidden');
+            mimoInterface.classList.add('hidden');
+            skipButton.classList.remove('hidden');
+            notifyToggle.checked = false;
+            
+            const btn = document.getElementById('sync-btn');
+            btn.innerText = "Start Sync";
+            btn.disabled = false;
+            btn.style.opacity = "1";
+            showMessage("CONFIG RESET");
+        }
+
+        const fixHeight = () => {
+            document.body.style.height = `${window.innerHeight}px`;
+        };
+
+        window.addEventListener('resize', fixHeight);
+        window.onload = fixHeight;
+    </script>
+</body>
+</html>
+
