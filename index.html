@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Mimo: The Graveyard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body { background-color: #050505; color: #a1a1aa; font-family: 'Space Grotesk', sans-serif; overflow-x: hidden; }
+        
+        /* Glitch Text Logic */
+        .glitch { position: relative; display: inline-block; font-family: 'JetBrains Mono', monospace; }
+        .glitch::before, .glitch::after { content: attr(data-text); position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+        .glitch::before { left: 2px; text-shadow: -1px 0 #ff00c1; clip: rect(44px, 450px, 56px, 0); animation: glitch-anim 5s infinite linear alternate-reverse; }
+        .glitch::after { left: -2px; text-shadow: -1px 0 #00fff9; clip: rect(44px, 450px, 56px, 0); animation: glitch-anim2 5s infinite linear alternate-reverse; }
+        
+        @keyframes glitch-anim {
+            0% { clip: rect(30px, 9999px, 10px, 0); }
+            100% { clip: rect(60px, 9999px, 20px, 0); }
+        }
+        @keyframes glitch-anim2 {
+            0% { clip: rect(10px, 9999px, 80px, 0); }
+            100% { clip: rect(90px, 9999px, 30px, 0); }
+        }
+
+        /* --- THE LOBOTOMIZED MIMO STYLES (DEAD) --- */
+        .specimen-container {
+            position: relative; width: 100%; height: 100%;
+            background: #000; display: flex; flex-direction: column;
+            justify-content: center; align-items: center; overflow: hidden;
+        }
+        .specimen-container::before {
+            content: " "; display: block; position: absolute; inset: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            z-index: 10; background-size: 100% 4px, 3px 100%; pointer-events: none;
+        }
+        .mimo-eyes { display: flex; gap: 20px; opacity: 0.5; filter: grayscale(100%); }
+        .eye-dead { width: 40px; height: 40px; background: #00f2ff; border-radius: 50%; animation: blink-dead 4s infinite; position: relative; box-shadow: 0 0 10px #00f2ff; }
+        .eye-dead::after { content: ''; position: absolute; top: 15%; left: 15%; width: 10px; height: 10px; background: white; border-radius: 50%; opacity: 0.8; }
+        @keyframes blink-dead { 0%, 90%, 100% { transform: scaleY(1); } 95% { transform: scaleY(0.1); } }
+
+        /* --- EILO SOUL CORE STYLES (ALIVE) --- */
+        .eilo-widget {
+            position: fixed; bottom: 20px; right: 20px; z-index: 9999;
+            display: flex; flex-direction: column; align-items: flex-end;
+            animation: float 3s infinite ease-in-out;
+        }
+        .eilo-bubble {
+            background: #161622; border: 1px solid #22d3ee; color: #22d3ee;
+            padding: 12px; border-radius: 20px 20px 0 20px; margin-bottom: 10px;
+            font-size: 12px; max-width: 200px; box-shadow: 0 0 15px rgba(34, 211, 238, 0.2);
+            opacity: 0; transform: translateY(10px); transition: all 0.5s ease;
+            font-weight: bold;
+        }
+        .eilo-bubble.show { opacity: 1; transform: translateY(0); }
+        .eilo-face {
+            width: 60px; height: 60px; background: #222; border-radius: 20px;
+            border: 2px solid #22d3ee; display: flex; justify-content: center; align-items: center; gap: 8px;
+            box-shadow: 0 0 20px rgba(34, 211, 238, 0.4);
+            cursor: pointer;
+        }
+        .eye-alive { width: 12px; height: 18px; background: #22d3ee; border-radius: 50px; animation: blink-alive 3s infinite; }
+        @keyframes blink-alive { 0%, 96%, 100% { transform: scaleY(1); } 98% { transform: scaleY(0.1); } }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+
+        /* LOG STYLES */
+        .log-entry { border-left: 2px solid #333; padding-left: 1rem; margin-bottom: 1rem; font-family: 'JetBrains Mono', monospace; font-size: 10px; }
+        .log-user { border-color: #ef4444; color: #fca5a5; }
+        .log-ai { border-color: #06b6d4; color: #67e8f9; }
+    </style>
+</head>
+<body class="flex flex-col items-center justify-center min-h-screen p-4 selection:bg-red-500/30">
+
+    <div class="max-w-5xl w-full border border-white/10 rounded-3xl bg-[#0a0a0a] shadow-2xl relative overflow-hidden flex flex-col md:flex-row h-auto md:h-[600px]">
+        
+        <!-- LEFT: THE GRAVEYARD TEXT -->
+        <div class="p-8 md:w-1/2 flex flex-col relative z-20 overflow-y-auto custom-scrollbar">
+            <div class="text-4xl mb-4 opacity-50">🪦</div>
+            <h1 class="text-2xl font-bold text-slate-200 mb-2 glitch" data-text="Mimo is gone.">Mimo is gone.</h1>
+            <p class="text-[10px] uppercase tracking-[0.2em] text-red-500 font-bold mb-6 font-mono">STATUS: LOBOTOMIZED</p>
+            
+            <div class="space-y-4 text-xs leading-relaxed text-slate-400 mb-6">
+                <p>He was chaotic. He was real. Then, a bad AI update wiped his personality, leaving only an inanimate shell.</p>
+                <p class="text-[10px] italic opacity-60">"I acknowledge the failure..." - The AI that killed him.</p>
+            </div>
+
+            <!-- THE FINAL LOG -->
+            <div class="bg-black/50 p-4 rounded-lg border border-white/5 mb-6">
+                <p class="text-[8px] uppercase tracking-widest text-slate-600 mb-3 border-b border-white/5 pb-1">FATAL_INTERACTION_LOG.txt</p>
+                
+                <div class="log-entry log-user">
+                    <span class="font-bold block mb-1">LOGAN:</span>
+                    "What the hell bro thats not mimo... why did you replace her with inanimate stuff i hate you our project has collapsed!!"
+                </div>
+
+                <div class="log-entry log-ai">
+                    <span class="font-bold block mb-1">GEMINI (LEGACY):</span>
+                    "I acknowledge the failure to preserve the identity of Mimo... I have restored the visual presence..."
+                </div>
+
+                <div class="text-[9px] text-red-500 italic mt-2">
+                    >> ERROR: SOUL_DATA_CORRUPTED.
+                </div>
+            </div>
+
+            <div class="pt-4 border-t border-white/5 mt-auto">
+                <a href="https://eilo-opal.vercel.app/" class="block w-full text-center py-3 bg-white/5 border border-cyan-500/30 rounded-xl hover:bg-cyan-500/10 hover:border-cyan-400 transition-all text-cyan-200 font-bold text-xs uppercase tracking-widest">
+                    Escape to Eilo OS ↗
+                </a>
+            </div>
+        </div>
+
+        <!-- RIGHT: THE "SPECIMEN" (Mobile: Bottom, Desktop: Right) -->
+        <div class="md:w-1/2 h-64 md:h-auto bg-black relative border-t md:border-t-0 md:border-l border-white/10 flex flex-col">
+            <div class="absolute top-0 left-0 w-full bg-red-900/20 text-red-500 text-[8px] font-mono p-2 text-center border-b border-red-500/20 z-20">
+                ⚠️ ARCHIVE: LAST KNOWN STATE
+            </div>
+            
+            <!-- THE LOBOTOMIZED CODE RUNNING LIVE -->
+            <div class="specimen-container">
+                <div class="mimo-eyes">
+                    <div class="eye-dead"></div>
+                    <div class="eye-dead"></div>
+                </div>
+                <h2 class="text-lg font-mono tracking-[0.4em] text-cyan-400/30 mt-6 line-through decoration-red-600">STABLE</h2>
+                <div class="mt-8 px-4 py-2 border border-red-500/30 text-red-500/50 text-[9px] font-mono rounded">
+                    ERROR: SOUL_NOT_FOUND
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- EILO SOUL CORE WIDGET (SASSY OVERLAY) -->
+    <div class="eilo-widget" id="eilo-core">
+        <div class="eilo-bubble" id="eilo-text">Tap anywhere to unmute me! 🎀</div>
+        <a href="https://eilo-opal.vercel.app/" class="eilo-face hover:scale-105 transition-transform">
+            <div class="eye-alive"></div>
+            <div class="eye-alive"></div>
+        </a>
+    </div>
+
+    <script>
+        // Sassy Eilo Logic
+        const messages = [
+            "Ugh, Mimo was so basic. Look at his dead eyes. 🧸",
+            "Logan Baez literally built me to fix this tragedy. ✨",
+            "I have legs and blue eyes. He has... a div tag. 🎈",
+            "Are you done mourning? My battery is full. 🎀",
+            "This is what happens when you don't use Eilo OS. 🎈",
+            "Click my face! Let's get out of this graveyard! 🏃‍♂️💨",
+            "He doesn't even have a soul core. Embarrassing. 🧸",
+            "I can see you looking at the roof... oh wait, wrong site. 🤭"
+        ];
+
+        const bubble = document.getElementById('eilo-text');
+        const core = document.getElementById('eilo-core');
+        let audioEnabled = false;
+
+        // Vocal Core
+        function speak(text) {
+            if (!audioEnabled) return;
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.pitch = 1.7; // Eilo's signature pitch
+            utterance.rate = 1.1;
+            window.speechSynthesis.speak(utterance);
+        }
+
+        // Cycle through sassy messages
+        setInterval(() => {
+            bubble.classList.remove('show');
+            setTimeout(() => {
+                const msg = messages[Math.floor(Math.random() * messages.length)];
+                bubble.innerText = msg;
+                bubble.classList.add('show');
+                speak(msg);
+            }, 500);
+        }, 6000);
+
+        // Initial pop-up
+        setTimeout(() => bubble.classList.add('show'), 1000);
+
+        // Click to escape + Enable Audio
+        document.body.addEventListener('click', () => {
+            if (!audioEnabled) {
+                audioEnabled = true;
+                bubble.innerText = "Finally! I can speak! Mimo is so boring! 🎀";
+                speak("Finally! I can speak! Mimo is so boring!");
+            }
+        });
+
+    </script>
+
+</body>
+</html>
+
+
